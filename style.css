@@ -1,0 +1,33 @@
+input:focus::placeholder {
+  color: transparent;
+}
+
+
+input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button.loupe-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Supprimer la croix par défaut sur input type="search" */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+.dropdown .btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
