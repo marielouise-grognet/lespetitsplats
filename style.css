@@ -1,3 +1,12 @@
+:root {
+  --grey-dark : #7a7a7a;
+  --yellow: #FFD15B; 
+}
+
+
+
+
+
 input:focus::placeholder {
   color: transparent;
 }
@@ -29,5 +38,82 @@ input[type="search"]::-webkit-search-cancel-button {
   outline: none !important;
   box-shadow: none !important;
 }
+
+article.card {
+  border-radius: 21px;
+  width:380px;
+  height: 731px;
+  margin-bottom:40px;
+}
+
+.card img {
+  border-radius: 21px 21px 0 0 ;
+  object-fit: cover;
+  width: 100%;
+  height: 240px;
+}
+
+
+.time-badge {
+  position : absolute;
+  top: 20px;
+  right : 20px;
+  background-color: var(--yellow);
+  border-radius: 20px;
+  width: 60px;
+  height:25px;
+  font-size: 0.7em;
+  padding: 4px 0 0 10px;
+
+}
+
+.card h2 {
+  padding :30px 0 30px 20px;
+  font-size: 1em;
+  font-family: "anton";
+}
+
+.card h3 {
+  padding :0 0 10px 20px;
+  font-size: 1em;
+  color: var(--grey-dark);
+}
+
+.card p {
+  font-family: "Manrope";
+  padding : 0 20px 10px 20px;
+  font-size: 0.9em;
+  max-height :90px;
+  overflow: hidden;
+
+}
+
+.card h4 {
+  padding :10px 0 10px 20px;
+  font-size: 1em;
+  color: var(--grey-dark);
+}
+
+li {
+  list-style: none;
+  padding: 0 20px 20px 20px;
+  font-size: 0.9em;
+}
+
+
+span.quantity {
+  color : var(--grey-dark);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
