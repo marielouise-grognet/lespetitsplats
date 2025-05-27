@@ -1,6 +1,6 @@
 function recipeTemplate(data) {
   const { id, name, image, time, description, ingredients } = data;
-  const picture = `JSON recipes/${image}`;
+  const picture = `JSON-recipes/${image}`;
 
   function getUserCardDOM() {
     const article = document.createElement('article');
@@ -24,7 +24,7 @@ function recipeTemplate(data) {
 //Association de l'image et de la vignette en enfant du container
     imageWrapper.appendChild(img);
     imageWrapper.appendChild(badge);
-    
+
     const h2 = document.createElement('h2');
     h2.textContent = name;
 

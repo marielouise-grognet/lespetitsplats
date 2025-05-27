@@ -15,7 +15,7 @@
 
 <header class="position-relative">
   <div class="container-fluid p-0 px-0 bandeau" style="height: 600px; overflow: hidden;">
-    <img src="./img/Mask group.png"
+    <img src="./img/Mask-group.png"
          alt="image d'introduction"
          class="img-fluid w-100 h-100"
          style="object-fit: cover;">
@@ -35,7 +35,6 @@
           <form role="search" onsubmit="return false;">
             <div class="position-relative" style="width: 700px; height: 55px; margin: auto; border-radius:10px;">
               <input id="searchInput" class="form-control pe-5" type="search" placeholder="Rechercher une recette, un ingrédient,..." aria-label="Recherche" style="height: 100%; padding-left: 20px;border-radius:10px;">
-            </-------Bouton de suppression ----->  
               <button type="button"
                 id="clearButton"
                 class="btn position-absolute top-50 translate-middle-y bg-transparent border-0 me-5"
@@ -43,7 +42,7 @@
                 ✕
               </button>
 
-              <button type="submit"class="btn loupe-btn position-absolute end-0 top-50 translate-middle-y bg-transparent border-0 me-3" style="padding-right:1px">
+              <button type="submit" class="btn loupe-btn position-absolute end-0 top-50 translate-middle-y bg-transparent border-0 me-3" style="padding-right:1px">
                 <img src="./img/loupe.png" alt="bouton rechercher" style="height: 40px;">
               </button>
 
@@ -55,18 +54,17 @@
 
     </div>
   
-  </div>
 </header>
 
 
 <main style="background-color:#E5E5E5">
 
-  <!---------------------------SECTION DES FILTRES----------------------------->
+  <!--SECTION DES FILTRES-->
   <section>
     <div class="container d-flex justify-content-between mx-9">
       <div class="filter d-flex flex-wrap gap-5 py-4">
 
-        <!--------------Premier filtre ----------------->
+        <!--Premier filtre -->
 
         <div class="dropdown" style="width: 160px; height: 56px;">
         <button class="btn d-flex justify-content-between align-items-center w-100 h-100"
@@ -82,7 +80,7 @@
         </ul>
       </div>
 
-<!--------------Deuxième filtre ----------------->
+<!---Deuxième filtre -->
   <div class="dropdown" style="width: 160px; height: 56px;">
     <button class="btn d-flex justify-content-between align-items-center w-100 h-100" style=" border-radius: 10px; background-color: #FFFFFF;">
       Appareils
@@ -95,7 +93,7 @@
     </ul>
   </div>
 
-  <!--------------Troisième filtre ----------------->
+  <!--Troisième filtre -->
   <div class="dropdown" style="width: 160px; height: 56px;">
     <button class="btn d-flex justify-content-between align-items-center w-100 h-100" style=" border-radius: 10px; background-color: #FFFFFF">
       Ustensiles
@@ -115,7 +113,7 @@
     </div>
   </section>
 
-  <!---------------------------SECTION DES PROPOSITIONS DE RECETTES----------------------------->
+  <!--SECTION DES PROPOSITIONS DE RECETTES-->
 <section>
   <div class=" container recipes-container d-flex flex-wrap justify-content-between mx-9">
     
@@ -125,8 +123,7 @@
 <footer>
  
 </footer>
-</div>
-<script src="JSON recipes/recipes.js"></script>
+<script src="JSON-recipes/recipes.js"></script>
 <script src="recipesTemplate.js"></script>
 <script src="script.js"></script>
 
