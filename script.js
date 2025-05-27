@@ -1,4 +1,35 @@
+async function getRecipes () {
+  try {
+    const data = await response.json()
+    return {
+      recipes : data.recipes
+    }
+  } catch (error) {
+    console.error("Erreur lors du chargement des recettes:", error)
+    return {recipes :[] }
+  }
+}
 
+async function displayData (recipes) {
+  const recipesSection = document.querySelector(".recipes-container")
+  recipes.forEach((recipe) => {
+    const recipeModel = recipeTemplate(recipe)
+    const card = recipeModel.getUserCardDOM();
+    recipesSection.appendChild(card);
+
+
+  })
+}
+
+async function init() {
+  displayData(recipes)
+}
+
+init()
+  
+  
+  
+  
   const input = document.getElementById('searchInput');
   const clearBtn = document.getElementById('clearButton');
 
@@ -33,5 +64,7 @@ document.querySelectorAll('.dropdown').forEach(dropdown => {
       menu.style.display = 'none';
     }
   });
+  init()
 });
+
 
