@@ -3,8 +3,72 @@
   --yellow: #FFD15B; 
 }
 
+.bandeau {
+  height: 600px; 
+  overflow: hidden;
+} 
 
+.object-cover {
+  object-fit: cover;
+}
 
+.overlay {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%); 
+  font-family:'anton'; 
+  color : #FFD15B; 
+  text-align: center; 
+  z-index: 10; 
+  width:650px;
+}
+
+.searchBar {
+  position: absolute; 
+  top: 70%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+}
+
+.searchContainer {
+  width: 700px; 
+  height: 55px; 
+  margin: auto; 
+}
+
+.searchInput {
+  height: 100%; 
+  padding-left: 20px;
+  border-radius:10px;
+}
+.clear-btn {
+position:absolute ;
+top : 50% ;
+transform: translateY(-50%);
+right: 60px;
+background-color: transparent;
+border: none;
+display: none;
+}
+
+.submitButton {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  background-color: transparent;
+  border: none;
+  padding-right: 1px;
+}
+
+.loupe-img {
+  height : 40px;
+}
 
 
 input:focus::placeholder {
@@ -27,18 +91,47 @@ button.loupe-btn:focus {
   box-shadow: none;
 }
 
-/* Supprimer la croix par défaut sur input type="search" */
 input[type="search"]::-webkit-search-cancel-button {
   -webkit-appearance: none;
   appearance: none;
   display: none;
 }
 
+.dropdown {
+  width: 160px; 
+  height: 56px;
+}
+
+
 .dropdown .btn:focus {
   outline: none !important;
   box-shadow: none !important;
 }
 
+.dropdown-button {
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border : none;
+  padding: 0 15px 0 15px;
+}
+
+.dropdown-menu {
+  display: none;
+}
+
+main {
+ background-color:#E5E5E5;
+}
+
+.total-recipes-text {
+  font-family: 'Anton'; 
+  font-size: 1.5em;
+}
 article.card {
   border-radius: 21px;
   width:380px;
