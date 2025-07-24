@@ -85,7 +85,8 @@ function extractUstensils(recipe, set) {
 // Définition de fonction d'affichage des sets 
 function displayDropdownsLists(listElement, set) {
   listElement.innerHTML = ''
-  set.forEach(item => {
+  const sortedItems = Array.from(set).sort() // Je transforme mon set en tableau et je trie les items par ordre alphabétique
+  sortedItems.forEach(item => {
     const li = document.createElement('li')
     li.textContent = item
     listElement.appendChild(li)
@@ -99,14 +100,39 @@ function createDropdownById(dropdownListId, extractorFn) {
   displayDropdownsLists(listElement, set)
 }
 
-// Définition d'une fonction qui englobe nos différentes fonctions allouées à la gestion des dropdowns
+// Définition d'une fonction qui retourne un tableau avec les données correspondantes à l'input
+function filterListAccordingToInput(value, extractorFn) {
+  const set = generateDropdownsSets(extractorFn); // Génère un Set depuis les recettes
+  const array = Array.from(set);                  // Convertit le Set en tableau
+  return array.filter(item => item.startsWith(value.toLowerCase())); // Garde uniquement les items qui commencent par les lettres tapées
+}
+// Définition d'une fonction qui affiche les éléments du tableau précédemment créé à partir de 3 lettres rentrées dans l'input.
+function displayDropdownCorrespondingItems(inputId, listId, extractorFn) {
+  const input = document.getElementById(inputId);
+  const listElement = document.getElementById(listId);
+  input.addEventListener('input', () => {
+    const value = input.value.trim();
+    if (value.length >= 3) {
+      const filteredItems = filterListAccordingToInput(value, extractorFn);
+      displayDropdownsLists(listElement, new Set(filteredItems));
+    } else {
+      const fullSet = generateDropdownsSets(extractorFn);
+      displayDropdownsLists(listElement, fullSet);
+    }
+  });
+}
+// Définition d'une fonction qui englobe nos différentes fonctions allouées aux dropdowns
 function manageDropdowns() {
   openCloseDropdowns()
   createDropdownById('firstDropdownList', extractIngredients)
   createDropdownById('secondDropdownList', extractAppliances)
   createDropdownById('thirdDropdownList', extractUstensils)
+  displayDropdownCorrespondingItems('searchIngredientsInput', 'firstDropdownList', extractIngredients)
+  displayDropdownCorrespondingItems('searchAppliancesInput', 'secondDropdownList', extractAppliances)
+  displayDropdownCorrespondingItems('searchUstensilsInput', 'thirdDropdownList', extractUstensils)
 }
 manageDropdowns()
+
 
 
 
