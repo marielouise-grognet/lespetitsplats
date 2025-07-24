@@ -76,7 +76,7 @@ function extractIngredients(recipe, set) {
 function extractAppliances(recipe, set) {
   set.add(recipe.appliance.toLowerCase())
 }
-// ...Méthode d'extraction spéciale pour la liste ustensiles...
+// ...Méthode d'extraction spéciale pour la liste ustensiles.
 function extractUstensils(recipe, set) {
   recipe.ustensils.forEach(item => {
     set.add(item.toLowerCase())

@@ -42,7 +42,7 @@ function createRecipeCard(recipe) {
   const secondCol = ingredients.slice(half);
   const row = document.createElement('div');
   row.classList.add('row');
-    // colonne 1
+  // colonne 1
   const col1 = document.createElement('div');
   col1.classList.add('col');
   firstCol.forEach(item => {
@@ -50,7 +50,7 @@ function createRecipeCard(recipe) {
     li.innerHTML = `${item.ingredient}<br><span class="quantity">${item.quantity ? item.quantity : ''}${item.unit ? ` ${item.unit}` : ''}</span>`;
     col1.appendChild(li);
   });
-    // colonne 2
+  // colonne 2
   const col2 = document.createElement('div');
   col2.classList.add('col');
   secondCol.forEach(item => {
@@ -58,11 +58,11 @@ function createRecipeCard(recipe) {
     li.innerHTML = `${item.ingredient}<br><span class="quantity">${item.quantity ? item.quantity : ''}${item.unit ? ` ${item.unit}` : ''}</span>`;
     col2.appendChild(li);
   });
-    // on intègre les colonnes à la ligne 
+  // on intègre les colonnes à la ligne 
   row.appendChild(col1);
   row.appendChild(col2);
 
-// On organise la structure de l'article / card
+  // On organise la structure de l'article / card
   article.appendChild(imageWrapper);
   article.appendChild(h2);
   article.appendChild(h3);

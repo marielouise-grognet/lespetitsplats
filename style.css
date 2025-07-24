@@ -1,12 +1,13 @@
 :root {
-  --grey-dark : #7a7a7a;
-  --yellow: #FFD15B; 
+  --grey-dark: #7a7a7a;
+  --grey-light : #C6C6C6;
+  --yellow: #FFD15B;
 }
 
 .bandeau {
-  height: 600px; 
+  height: 600px;
   overflow: hidden;
-} 
+}
 
 .object-cover {
   object-fit: cover;
@@ -17,43 +18,47 @@
 }
 
 .title {
-  position: absolute; 
-  top: 50%; 
-  left: 50%; 
-  transform: translate(-50%, -50%); 
-  font-family:'anton'; 
-  color : #FFD15B; 
-  text-align: center; 
-  z-index: 10; 
-  width:650px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'anton';
+  color: #FFD15B;
+  text-align: center;
+  z-index: 10;
+  width: 650px;
 }
 
 .searchBar {
-  position: absolute; 
-  top: 70%; 
-  left: 50%; 
+  position: absolute;
+  top: 70%;
+  left: 50%;
   transform: translate(-50%, -50%);
 }
 
 .searchContainer {
-  width: 700px; 
-  height: 55px; 
-  margin: auto; 
+  width: 700px;
+  height: 55px;
+  margin: auto;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .searchInput {
-  height: 100%; 
+  height: 100%;
   padding-left: 20px;
-  border-radius:10px;
 }
+
+
+
 .clear-btn {
-position:absolute ;
-top : 50% ;
-transform: translateY(-50%);
-right: 60px;
-background-color: transparent;
-border: none;
-display: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 60px;
+  background-color: transparent;
+  border: none;
+  display: none;
 }
 
 .submitButton {
@@ -67,7 +72,7 @@ display: none;
 }
 
 .loupe-img {
-  height : 40px;
+  height: 40px;
 }
 
 
@@ -77,8 +82,8 @@ input:focus::placeholder {
 
 
 input:focus {
-    outline: none;
-    box-shadow: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .form-control:focus {
@@ -98,7 +103,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .dropdown {
-  width: 160px; 
+  width: 160px;
   height: 56px;
 }
 
@@ -116,31 +121,56 @@ input[type="search"]::-webkit-search-cancel-button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border : none;
+  border: none;
   padding: 0 15px 0 15px;
 }
 
 .dropdown-menu {
   display: none;
+  width: 150px;
 }
 
+.dropdownForm {
+  display: flex;
+  justify-content: center;
+  /* centre horizontalement */
+  align-items: center;
+  /* centre verticalement */
+  height: 40px;
+  /* nécessaire pour centrer verticalement */
+  padding: 5px;
+}
+
+.dropdownInput {
+  width: 130px;
+  padding-left: 10px;
+  border : 1px solid var(--grey-light);
+}
+
+.dropdown-list {
+  padding: 5px;
+}
+
+
+
 main {
- background-color:#E5E5E5;
+  background-color: #E5E5E5;
 }
 
 .total-recipes-text {
-  font-family: 'Anton'; 
+  font-family: 'Anton';
   font-size: 1.5em;
 }
+
 article.card {
   border-radius: 21px;
-  width:380px;
+  width: 380px;
   height: 731px;
-  margin-bottom:40px;
+  margin-bottom: 40px;
 }
 
 .card img {
-  border-radius: 21px 21px 0 0 ;
+  border-radius: 21px 21px 0 0;
   object-fit: cover;
   width: 100%;
   height: 240px;
@@ -148,41 +178,41 @@ article.card {
 
 
 .time-badge {
-  position : absolute;
+  position: absolute;
   top: 20px;
-  right : 20px;
+  right: 20px;
   background-color: var(--yellow);
   border-radius: 20px;
   width: 60px;
-  height:25px;
+  height: 25px;
   font-size: 0.7em;
   padding: 4px 0 0 10px;
 
 }
 
 .card h2 {
-  padding :30px 0 30px 20px;
+  padding: 30px 0 30px 20px;
   font-size: 1em;
   font-family: "anton";
 }
 
 .card h3 {
-  padding :0 0 10px 20px;
+  padding: 0 0 10px 20px;
   font-size: 1em;
   color: var(--grey-dark);
 }
 
 .card p {
   font-family: "Manrope";
-  padding : 0 20px 10px 20px;
+  padding: 0 20px 10px 20px;
   font-size: 0.9em;
-  max-height :90px;
+  max-height: 90px;
   overflow: hidden;
 
 }
 
 .card h4 {
-  padding :10px 0 10px 20px;
+  padding: 10px 0 10px 20px;
   font-size: 1em;
   color: var(--grey-dark);
 }
@@ -195,18 +225,5 @@ li {
 
 
 span.quantity {
-  color : var(--grey-dark);
+  color: var(--grey-dark);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
