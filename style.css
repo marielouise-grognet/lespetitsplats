@@ -4,6 +4,14 @@
   --yellow: #FFD15B;
 }
 
+.selected-item {
+  background-color: #FFD15B !important;
+  width:100%;
+  padding-top:10px;
+  padding-bottom:10px;
+
+}
+
 .searchDropdownContainer {
   position : relative;
 }
@@ -167,6 +175,9 @@ input[type="search"]::-webkit-search-cancel-button {
 .dropdown-menu {
   display: none;
   width: 150px;
+  position : absolute;
+  top : 84%;
+  border: none !important;
 }
 
 .dropdownForm {
@@ -177,18 +188,21 @@ input[type="search"]::-webkit-search-cancel-button {
   /* centre verticalement */
   height: 40px;
   /* nécessaire pour centrer verticalement */
-  padding: 5px;
+  padding: 15px;
+  margin-bottom : 10px;
 }
 
 .dropdownInput {
-  width: 130px;
+  width: 120px;
   padding-left: 10px;
   border : 1px solid var(--grey-light);
 }
 
 .dropdown-list {
-  padding: 5px;
+  padding: 0px;
 }
+
+
 
 
 
@@ -245,7 +259,6 @@ article.card {
   font-family: "Manrope";
   padding: 0 20px 10px 20px;
   font-size: 0.9em;
-  max-height: 90px;
   overflow: hidden;
 
 }
@@ -258,11 +271,29 @@ article.card {
 
 li {
   list-style: none;
-  padding: 0 20px 20px 20px;
-  font-size: 0.9em;
+  padding: 10px 10px 10px 20px;
 }
 
 
 span.quantity {
   color: var(--grey-dark);
 }
+
+.recipeDescription {
+  width: 378px;
+  height: 90px;
+  padding: 0 20px 10px 20px;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.9em;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 5;              /* Limite le texte à 5 lignes */
+  -webkit-box-orient: vertical;
+}
+
+
+
+

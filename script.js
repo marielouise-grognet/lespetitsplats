@@ -83,13 +83,21 @@ function extractUstensils(recipe, set) {
   })
 }
 // Définition de fonction d'affichage des sets 
-function displayDropdownsLists(listElement, set) {
+function displayDropdownsLists(listElement, set, selectedSet = new Set()) {
   listElement.innerHTML = ''
   const sortedItems = Array.from(set).sort() // Je transforme mon set en tableau et je trie les items par ordre alphabétique
-  sortedItems.forEach(item => {
+  selectedSet.forEach(item => {
     const li = document.createElement('li')
     li.textContent = item
+    li.classList.add('selected-item')
     listElement.appendChild(li)
+  })
+  sortedItems.forEach(item => {
+    if (!selectedSet.has(item)) {
+      const li = document.createElement('li')
+      li.textContent = item
+      listElement.appendChild(li)
+    }
   })
 }
 
@@ -97,39 +105,96 @@ function displayDropdownsLists(listElement, set) {
 function createDropdownById(dropdownListId, extractorFn) {
   const listElement = document.getElementById(dropdownListId)
   const set = generateDropdownsSets(extractorFn)
-  displayDropdownsLists(listElement, set)
+  displayDropdownsLists(listElement, set, selectedSet = new Set())
 }
 
 // Définition d'une fonction qui retourne un tableau avec les données correspondantes à l'input
-function filterListAccordingToInput(value, extractorFn) {
+function filterDropdownListAccordingToInput(value, extractorFn) {
   const set = generateDropdownsSets(extractorFn); // Génère un Set depuis les recettes
-  const array = Array.from(set);                  // Convertit le Set en tableau
-  return array.filter(item => item.startsWith(value.toLowerCase())); // Garde uniquement les items qui commencent par les lettres tapées
+  const array = Array.from(set)                  // Convertit le Set en tableau
+  return array.filter(item => item.includes(value.toLowerCase())); // Garde uniquement les items qui commencent par les lettres tapées
 }
 // Définition d'une fonction qui affiche les éléments du tableau précédemment créé à partir de 3 lettres rentrées dans l'input.
-function displayDropdownCorrespondingItems(inputId, listId, extractorFn) {
-  const input = document.getElementById(inputId);
-  const listElement = document.getElementById(listId);
+function displayDropdownCorrespondingToInput(inputId, listId, extractorFn) {
+  const input = document.getElementById(inputId)
+  const listElement = document.getElementById(listId)
+  const fullSet = generateDropdownsSets(extractorFn)
   input.addEventListener('input', () => {
-    const value = input.value.trim();
-    if (value.length >= 3) {
-      const filteredItems = filterListAccordingToInput(value, extractorFn);
-      displayDropdownsLists(listElement, new Set(filteredItems));
+    const value = input.value.trim()
+    const selectedSet = selectedItems[listId]; // sélection en cours
+    if (value.length >= 1) {
+      const filteredItems = filterDropdownListAccordingToInput(value, extractorFn);
+      const filteredWithoutSelected = filteredItems.filter(item => !selectedSet.has(item));  // Supprime les éléments déjà sélectionnés
+      displayDropdownsLists( // Affiche les éléments sélectionnés en haut + ceux filtrés en dessous
+        listElement,
+        new Set(filteredWithoutSelected),
+        selectedSet
+      )
     } else {
-      const fullSet = generateDropdownsSets(extractorFn);
-      displayDropdownsLists(listElement, fullSet);
+      displayDropdownsLists(listElement, fullSet, selectedSet); // Réaffiche tout avec sélection en haut
     }
   });
 }
+
+
+const selectedItems = {
+  firstDropdownList: new Set(),
+  secondDropdownList: new Set(),
+  thirdDropdownList: new Set()
+}
+
+function highlightInYellowItemSelected(listId) {
+  const listElement = document.getElementById(listId)
+  listElement.addEventListener('click', (e) => {
+    const itemSelected = e.target
+    if (itemSelected.tagName === 'LI') {
+      const itemValue = itemSelected.textContent.toLowerCase()
+      if (selectedItems[listId].has(itemValue)) return
+      else selectedItems[listId].add(itemValue)
+      itemSelected.classList.add('selected-item')
+      listElement.prepend(itemSelected)
+    }
+  })
+}
+
+function manageClearCrossInDropdownSearchBar(inputId, listId, extractorFn) {
+  const dropdownInput = document.getElementById(inputId)
+  const dropdownClearBtn = dropdownInput.parentElement.querySelector('.clearInput-btn')
+  const fullSet = generateDropdownsSets(extractorFn)
+  dropdownInput.addEventListener('input', () => {
+    if (dropdownInput.value.length > 0) {
+      dropdownClearBtn.style.display = 'block'
+    } else {
+      dropdownClearBtn.style.display = 'none'
+    }
+  })
+  dropdownClearBtn.addEventListener('click', () => {
+    dropdownInput.value = ''
+    dropdownClearBtn.style.display = 'none'
+    dropdownInput.focus()
+    displayDropdownsLists(
+      document.getElementById(listId),
+      fullSet,
+      selectedItems[listId] // conserve les éléments sélectionnés
+    )
+  })
+}
+
 // Définition d'une fonction qui englobe nos différentes fonctions allouées aux dropdowns
 function manageDropdowns() {
   openCloseDropdowns()
   createDropdownById('firstDropdownList', extractIngredients)
   createDropdownById('secondDropdownList', extractAppliances)
   createDropdownById('thirdDropdownList', extractUstensils)
-  displayDropdownCorrespondingItems('searchIngredientsInput', 'firstDropdownList', extractIngredients)
-  displayDropdownCorrespondingItems('searchAppliancesInput', 'secondDropdownList', extractAppliances)
-  displayDropdownCorrespondingItems('searchUstensilsInput', 'thirdDropdownList', extractUstensils)
+  displayDropdownCorrespondingToInput('searchIngredientsInput', 'firstDropdownList', extractIngredients)
+  displayDropdownCorrespondingToInput('searchAppliancesInput', 'secondDropdownList', extractAppliances)
+  displayDropdownCorrespondingToInput('searchUstensilsInput', 'thirdDropdownList', extractUstensils)
+  manageClearCrossInDropdownSearchBar('searchIngredientsInput', 'firstDropdownList', extractIngredients)
+  manageClearCrossInDropdownSearchBar('searchAppliancesInput', 'secondDropdownList', extractAppliances)
+  manageClearCrossInDropdownSearchBar('searchUstensilsInput', 'thirdDropdownList', extractUstensils)
+  highlightInYellowItemSelected('firstDropdownList')
+  highlightInYellowItemSelected('secondDropdownList')
+  highlightInYellowItemSelected('thirdDropdownList')
 }
 manageDropdowns()
 

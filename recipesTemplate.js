@@ -29,8 +29,10 @@ function createRecipeCard(recipe) {
   h3.textContent = `RECETTE`;
 
   // On affiche la description de la recette
-  const descriptionText = document.createElement('p');
+  const descriptionText = document.createElement('p')
+  descriptionText.classList.add('recipeDescription');
   descriptionText.textContent = description;
+
 
   // On affiche le titre "ingrédients"
   const h4 = document.createElement('h4');
