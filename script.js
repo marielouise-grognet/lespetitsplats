@@ -143,7 +143,7 @@ const selectedItems = {
   thirdDropdownList: new Set()
 }
 
-function highlightInYellowItemSelected(listId) {
+function highlightInYellowItemSelectedAndCreateYellowVignetOutside(listId) {
   const listElement = document.getElementById(listId)
   listElement.addEventListener('click', (e) => {
     const itemSelected = e.target
@@ -153,6 +153,24 @@ function highlightInYellowItemSelected(listId) {
       else selectedItems[listId].add(itemValue)
       itemSelected.classList.add('selected-item')
       listElement.prepend(itemSelected)
+
+      const tagContainer = document.getElementById('selected-tags')
+      const tag = document.createElement('div')
+      tag.classList.add('selected-tag')
+      const span = document.createElement('span')
+      span.textContent = itemSelected.textContent
+      const closeBtn = document.createElement('button')
+      closeBtn.classList.add('close-tag')
+      closeBtn.textContent = '✕'
+
+      closeBtn.addEventListener('click', () => { // Suppression du tag au clic
+        tag.remove()
+        itemSelected.classList.remove('selected-item')
+        selectedItems[listId].delete(itemValue)
+      })
+      tag.appendChild(span)
+      tag.appendChild(closeBtn)
+      tagContainer.appendChild(tag)
     }
   })
 }
@@ -180,6 +198,8 @@ function manageClearCrossInDropdownSearchBar(inputId, listId, extractorFn) {
   })
 }
 
+
+
 // Définition d'une fonction qui englobe nos différentes fonctions allouées aux dropdowns
 function manageDropdowns() {
   openCloseDropdowns()
@@ -192,11 +212,14 @@ function manageDropdowns() {
   manageClearCrossInDropdownSearchBar('searchIngredientsInput', 'firstDropdownList', extractIngredients)
   manageClearCrossInDropdownSearchBar('searchAppliancesInput', 'secondDropdownList', extractAppliances)
   manageClearCrossInDropdownSearchBar('searchUstensilsInput', 'thirdDropdownList', extractUstensils)
-  highlightInYellowItemSelected('firstDropdownList')
-  highlightInYellowItemSelected('secondDropdownList')
-  highlightInYellowItemSelected('thirdDropdownList')
+  highlightInYellowItemSelectedAndCreateYellowVignetOutside('firstDropdownList')
+  highlightInYellowItemSelectedAndCreateYellowVignetOutside('secondDropdownList')
+  highlightInYellowItemSelectedAndCreateYellowVignetOutside('thirdDropdownList')
 }
 manageDropdowns()
+
+
+
 
 
 
