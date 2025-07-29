@@ -209,8 +209,19 @@ input[type="search"]::-webkit-search-cancel-button {
   font-weight: bold;
   cursor: pointer;
   color: #000;
-  margin-left: 20sspx;
+  margin-left: 20px;
+  font-size: 0.7em;
+  padding-top: 5px;
 }
+
+
+
+.close-selectedItem {
+  padding-top: 5px;
+  font-size: 0.8em;
+}
+
+
 
 .dropdownForm {
   display: flex;

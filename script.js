@@ -1,3 +1,8 @@
+const selectedItems = {
+  ingredientsDropdownList: new Set(),
+  appliancesDropdownList: new Set(),
+  ustensilsDropdownList: new Set()
+}
 
 // Affichage des recettes sur la page d'accueil
 function displayRecipes(recipes) {
@@ -114,7 +119,7 @@ function filterDropdownListAccordingToInput(value, extractorFn) {
   const array = Array.from(set)                  // Convertit le Set en tableau
   return array.filter(item => item.includes(value.toLowerCase())); // Garde uniquement les items qui commencent par les lettres tapées
 }
-// Définition d'une fonction qui affiche les éléments du tableau précédemment créé à partir de 3 lettres rentrées dans l'input.
+// Définition d'une fonction qui affiche les éléments du tableau précédemment créé à partir d'une lettre rentrées dans l'input.
 function displayDropdownCorrespondingToInput(inputId, listId, extractorFn) {
   const input = document.getElementById(inputId)
   const listElement = document.getElementById(listId)
@@ -137,43 +142,68 @@ function displayDropdownCorrespondingToInput(inputId, listId, extractorFn) {
 }
 
 
-const selectedItems = {
-  firstDropdownList: new Set(),
-  secondDropdownList: new Set(),
-  thirdDropdownList: new Set()
-}
-
-function highlightInYellowItemSelectedAndCreateYellowVignetOutside(listId) {
+function selectItem(listId) {
   const listElement = document.getElementById(listId)
   listElement.addEventListener('click', (e) => {
     const itemSelected = e.target
-    if (itemSelected.tagName === 'LI') {
-      const itemValue = itemSelected.textContent.toLowerCase()
-      if (selectedItems[listId].has(itemValue)) return
-      else selectedItems[listId].add(itemValue)
-      itemSelected.classList.add('selected-item')
-      listElement.prepend(itemSelected)
+    const itemValue = itemSelected.textContent.toLowerCase()
+    if (selectedItems[listId].has(itemValue)) return
+    else selectedItems[listId].add(itemValue)
+    itemSelected.classList.add('selected-item')
+    itemSelected.innerHTML = `
+      <div class="d-flex justify-content-between itemSelected-container">
+        ${itemSelected.textContent}
+        <i class="fa-solid fa-circle-xmark close-selectedItem"; cursor: pointer;"></i>
+      </div>
+    `
+    listElement.prepend(itemSelected)
+    createYellowTag(itemSelected, itemValue)
+    closeSelectedItem (itemSelected, itemValue)
 
-      const tagContainer = document.getElementById('selected-tags')
-      const tag = document.createElement('div')
-      tag.classList.add('selected-tag')
-      const span = document.createElement('span')
-      span.textContent = itemSelected.textContent
-      const closeBtn = document.createElement('button')
-      closeBtn.classList.add('close-tag')
-      closeBtn.textContent = '✕'
+    
+})
+  function closeSelectedItem(itemSelected, itemValue) {
+  const closeIcon = itemSelected.querySelector('.close-selectedItem')
+  closeIcon.addEventListener('click', (event) => {
+    event.stopPropagation() // Évite de relancer le click sur le LI
+    itemSelected.classList.remove('selected-item')
+    selectedItems[listId].delete(itemValue)
+    itemSelected.innerHTML = itemValue // remet le texte brut
+    listElement.appendChild(itemSelected) // repositionne l'élément
+    removeYellowTag(itemValue)
+  })
+}
 
-      closeBtn.addEventListener('click', () => { // Suppression du tag au clic
-        tag.remove()
-        itemSelected.classList.remove('selected-item')
-        selectedItems[listId].delete(itemValue)
-      })
-      tag.appendChild(span)
-      tag.appendChild(closeBtn)
-      tagContainer.appendChild(tag)
+function removeYellowTag(itemValue) {
+  const tags = document.querySelectorAll('#selected-tags-container .selected-tag')
+  tags.forEach(tag => {
+    const span = tag.querySelector('span')
+    if (span && span.textContent.trim().toLowerCase() === itemValue.trim().toLowerCase()) {
+      tag.remove()
     }
   })
 }
+
+  function createYellowTag(itemSelected, itemValue) {
+    const tagContainer = document.getElementById('selected-tags-container')
+    const tag = document.createElement('div')
+    tag.classList.add('selected-tag')
+    const span = document.createElement('span')
+    span.textContent = itemSelected.textContent
+    const closeBtn = document.createElement('button')
+    closeBtn.classList.add('close-tag')
+    closeBtn.textContent = '✕'
+    closeBtn.addEventListener('click', () => {
+      tag.remove()
+      itemSelected.classList.remove('selected-item')
+      selectedItems[listId].delete(itemValue)
+    })
+    tag.appendChild(span)
+    tag.appendChild(closeBtn)
+    tagContainer.appendChild(tag)
+  }
+}
+
 
 function manageClearCrossInDropdownSearchBar(inputId, listId, extractorFn) {
   const dropdownInput = document.getElementById(inputId)
@@ -203,18 +233,18 @@ function manageClearCrossInDropdownSearchBar(inputId, listId, extractorFn) {
 // Définition d'une fonction qui englobe nos différentes fonctions allouées aux dropdowns
 function manageDropdowns() {
   openCloseDropdowns()
-  createDropdownById('firstDropdownList', extractIngredients)
-  createDropdownById('secondDropdownList', extractAppliances)
-  createDropdownById('thirdDropdownList', extractUstensils)
-  displayDropdownCorrespondingToInput('searchIngredientsInput', 'firstDropdownList', extractIngredients)
-  displayDropdownCorrespondingToInput('searchAppliancesInput', 'secondDropdownList', extractAppliances)
-  displayDropdownCorrespondingToInput('searchUstensilsInput', 'thirdDropdownList', extractUstensils)
-  manageClearCrossInDropdownSearchBar('searchIngredientsInput', 'firstDropdownList', extractIngredients)
-  manageClearCrossInDropdownSearchBar('searchAppliancesInput', 'secondDropdownList', extractAppliances)
-  manageClearCrossInDropdownSearchBar('searchUstensilsInput', 'thirdDropdownList', extractUstensils)
-  highlightInYellowItemSelectedAndCreateYellowVignetOutside('firstDropdownList')
-  highlightInYellowItemSelectedAndCreateYellowVignetOutside('secondDropdownList')
-  highlightInYellowItemSelectedAndCreateYellowVignetOutside('thirdDropdownList')
+  createDropdownById('ingredientsDropdownList', extractIngredients)
+  createDropdownById('appliancesDropdownList', extractAppliances)
+  createDropdownById('ustensilsDropdownList', extractUstensils)
+  displayDropdownCorrespondingToInput('searchIngredientsInput', 'ingredientsDropdownList', extractIngredients)
+  displayDropdownCorrespondingToInput('searchAppliancesInput', 'appliancesDropdownList', extractAppliances)
+  displayDropdownCorrespondingToInput('searchUstensilsInput', 'ustensilsDropdownList', extractUstensils)
+  manageClearCrossInDropdownSearchBar('searchIngredientsInput', 'ingredientsDropdownList', extractIngredients)
+  manageClearCrossInDropdownSearchBar('searchAppliancesInput', 'appliancesDropdownList', extractAppliances)
+  manageClearCrossInDropdownSearchBar('searchUstensilsInput', 'ustensilsDropdownList', extractUstensils)
+  selectItem('ingredientsDropdownList')
+  selectItem('appliancesDropdownList')
+  selectItem('ustensilsDropdownList')
 }
 manageDropdowns()
 
