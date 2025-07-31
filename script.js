@@ -157,34 +157,57 @@ function selectItem(listId) {
       </div>
     `
     listElement.prepend(itemSelected)
-    createYellowTag(itemSelected, itemValue)
-    closeSelectedItem (itemSelected, itemValue)
+    createYellowTag(listId, itemSelected, itemValue)
+    closeSelectedItem (listId, itemSelected, itemValue)
+  })
+}
 
-    
-})
-  function closeSelectedItem(itemSelected, itemValue) {
+
+function unselectItem(listId, itemValue) {
+  // 1. Supprimer du Set de sélection
+  selectedItems[listId].delete(itemValue.toLowerCase());
+  // 2. Trouver et mettre à jour l'élément dans la dropdown
+  const listElement = document.getElementById(listId);
+  const listItems = listElement.querySelectorAll('li');
+  listItems.forEach(li => {
+    if (li.textContent.trim().toLowerCase() === itemValue.toLowerCase()) {
+      li.classList.remove('selected-item');
+      li.innerHTML = li.textContent.trim(); // remet juste le texte
+    }
+  });
+  // 3. Supprimer le tag correspondant
+  const tags = document.querySelectorAll('#selected-tags-container .selected-tag');
+  tags.forEach(tag => {
+    const span = tag.querySelector('span');
+    if (span && span.textContent.trim().toLowerCase() === itemValue.toLowerCase()) {
+      tag.remove();
+    }
+  });
+}
+
+
+  function closeSelectedItem(listId, itemSelected, itemValue) {
   const closeIcon = itemSelected.querySelector('.close-selectedItem')
   closeIcon.addEventListener('click', (event) => {
     event.stopPropagation() // Évite de relancer le click sur le LI
     itemSelected.classList.remove('selected-item')
-    selectedItems[listId].delete(itemValue)
-    itemSelected.innerHTML = itemValue // remet le texte brut
-    listElement.appendChild(itemSelected) // repositionne l'élément
-    removeYellowTag(itemValue)
+    unselectItem(listId, itemValue)
   })
 }
 
-function removeYellowTag(itemValue) {
+function removeYellowTag(listId, itemSelected, itemValue) {
   const tags = document.querySelectorAll('#selected-tags-container .selected-tag')
   tags.forEach(tag => {
     const span = tag.querySelector('span')
     if (span && span.textContent.trim().toLowerCase() === itemValue.trim().toLowerCase()) {
       tag.remove()
+      itemSelected.classList.remove('selected-item')
+      selectedItems[listId].delete(itemValue)
     }
   })
 }
 
-  function createYellowTag(itemSelected, itemValue) {
+  function createYellowTag(listId, itemSelected, itemValue) {
     const tagContainer = document.getElementById('selected-tags-container')
     const tag = document.createElement('div')
     tag.classList.add('selected-tag')
@@ -194,15 +217,17 @@ function removeYellowTag(itemValue) {
     closeBtn.classList.add('close-tag')
     closeBtn.textContent = '✕'
     closeBtn.addEventListener('click', () => {
-      tag.remove()
-      itemSelected.classList.remove('selected-item')
-      selectedItems[listId].delete(itemValue)
+      unselectItem(listId, itemValue)
     })
     tag.appendChild(span)
     tag.appendChild(closeBtn)
     tagContainer.appendChild(tag)
   }
-}
+
+
+
+
+
 
 
 function manageClearCrossInDropdownSearchBar(inputId, listId, extractorFn) {
