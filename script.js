@@ -4,9 +4,80 @@ const selectedItems = {
   ustensilsDropdownList: new Set()
 }
 
+// Ecriture d'une fonction qui actualise le contenu des dropdown selon ce qui a été rentré dans la searchbar principale 
+function updateDropdownsAccordingToRecipes(filteredRecipes) {
+  // Génère des Sets selon les recettes filtrées
+  const ingredientsSet = new Set();
+  const appliancesSet = new Set();
+  const ustensilsSet = new Set();
+  filteredRecipes.forEach(recipe => {
+    recipe.ingredients.forEach(ing => ingredientsSet.add(ing.ingredient.toLowerCase()));
+    appliancesSet.add(recipe.appliance.toLowerCase());
+    recipe.ustensils.forEach(ust => ustensilsSet.add(ust.toLowerCase()));
+  });
+  // Mets à jour les dropdowns en gardant la sélection en cours
+  displayDropdownsLists(document.getElementById('ingredientsDropdownList'), ingredientsSet, selectedItems.ingredientsDropdownList);
+  displayDropdownsLists(document.getElementById('appliancesDropdownList'), appliancesSet, selectedItems.appliancesDropdownList);
+  displayDropdownsLists(document.getElementById('ustensilsDropdownList'), ustensilsSet, selectedItems.ustensilsDropdownList);
+}
+
+
+// Ecriture de l'algorithme avec boucles natives 
+function searchKeywordsWithNative(keyword) {
+  const results = []
+  const lowerKeyword = keyword.toLowerCase()
+  for (recipe of recipes) {
+    let found = false
+    // Vérif dans le nom 
+    if (recipe.name.toLocaleLowerCase().includes(lowerKeyword)) {
+      found = true
+    }
+    // Vérif dans les ingrédients 
+    if (!found) {
+      for (const ing of recipe.ingredients) {
+        if (ing.ingredient.toLocaleLowerCase().includes(lowerKeyword)) {
+          found = true
+          console.log(lowerKeyword)
+          break // stoppe recherche dans les ingrédients 
+        }
+      }
+    }
+    // Vérif dans la description 
+    if (!found && recipe.description.toLocaleLowerCase().includes(lowerKeyword)) {
+      found = true
+    }
+    if (found) {
+      results.push(recipe)
+    }
+  }
+  return results
+}
+
+function inputKeywordInSearchBar () {
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', () => {
+    const value = searchInput.value.trim();
+    if (value.length >= 3) {
+      const results = searchKeywordsWithNative(value);
+      displayRecipes(results);
+      updateDropdownsAccordingToRecipes(results);
+    } else {
+      displayRecipes(recipes); // remet toutes les recettes
+    }
+  });
+}
+inputKeywordInSearchBar()
+
+
+
+
+
+
+
 // Affichage des recettes sur la page d'accueil
 function displayRecipes(recipes) {
   const recipesSection = document.querySelector(".recipes-container")
+  recipesSection.innerHTML =''
   recipes.forEach(recipe => {
     const card = createRecipeCard(recipe)
     recipesSection.appendChild(card)
@@ -186,8 +257,8 @@ function selectItem(listId) {
 function closeSelectedItem(listId, itemSelected, itemValue) {
   const closeBtnFromDropdown = itemSelected.querySelector('.close-selectedItem');
   closeBtnFromDropdown.addEventListener('click', (event) => {
-    event.stopPropagation(); 
-    closeTag(listId, itemValue); 
+    event.stopPropagation();
+    closeTag(listId, itemValue);
   });
 }
 
