@@ -4,37 +4,35 @@ const selectedItems = {
   ustensilsDropdownList: new Set()
 }
 
-// Ecriture d'une fonction qui actualise le contenu des dropdown selon ce qui a été rentré dans la searchbar principale 
+// Fonction qui actualise le contenu des dropdown selon ce qui a été rentré dans la searchbar principale 
 function updateDropdownsAccordingToRecipes(filteredRecipes) {
   // Génère des Sets selon les recettes filtrées
-  const ingredientsSet = new Set();
-  const appliancesSet = new Set();
-  const ustensilsSet = new Set();
+  const ingredientsSet = new Set()
+  const appliancesSet = new Set()
+  const ustensilsSet = new Set()
   filteredRecipes.forEach(recipe => {
-    recipe.ingredients.forEach(ing => ingredientsSet.add(ing.ingredient.toLowerCase()));
-    appliancesSet.add(recipe.appliance.toLowerCase());
-    recipe.ustensils.forEach(ust => ustensilsSet.add(ust.toLowerCase()));
-  });
+    recipe.ingredients.forEach(ing => ingredientsSet.add(ing.ingredient.toLowerCase()))
+    appliancesSet.add(recipe.appliance.toLowerCase())
+    recipe.ustensils.forEach(ust => ustensilsSet.add(ust.toLowerCase()))
+  })
   // Mets à jour les dropdowns en gardant la sélection en cours
-  displayDropdownsLists(document.getElementById('ingredientsDropdownList'), ingredientsSet, selectedItems.ingredientsDropdownList);
-  displayDropdownsLists(document.getElementById('appliancesDropdownList'), appliancesSet, selectedItems.appliancesDropdownList);
-  displayDropdownsLists(document.getElementById('ustensilsDropdownList'), ustensilsSet, selectedItems.ustensilsDropdownList);
+  displayDropdownsLists(document.getElementById('ingredientsDropdownList'), ingredientsSet, selectedItems.ingredientsDropdownList)
+  displayDropdownsLists(document.getElementById('appliancesDropdownList'), appliancesSet, selectedItems.appliancesDropdownList)
+  displayDropdownsLists(document.getElementById('ustensilsDropdownList'), ustensilsSet, selectedItems.ustensilsDropdownList)
 }
 
 
-// Ecriture de l'algorithme avec boucles natives 
-function searchKeywordsWithNative(keyword) {
+// Fonction qui actualise l'affichage des recettes selon mots clefs de la searchBar ->>>> VERSION BOUCLES NATIVES 
+function upgradeRecipesAccordingToSearchBar(keyword) {
   const results = []
   const lowerKeyword = keyword.toLowerCase()
   for (recipe of recipes) {
     let found = false
-    // Vérif dans le nom 
-    if (recipe.name.toLocaleLowerCase().includes(lowerKeyword)) {
+    if (recipe.name.toLocaleLowerCase().includes(lowerKeyword)) {         // Vérif dans le nom 
       found = true
     }
-    // Vérif dans les ingrédients 
-    if (!found) {
-      for (const ing of recipe.ingredients) {
+    if (!found) {                                                         // Si pas de correspondance avec le nom...
+      for (const ing of recipe.ingredients) {                             // ...Vérif dans les ingrédients 
         if (ing.ingredient.toLocaleLowerCase().includes(lowerKeyword)) {
           found = true
           console.log(lowerKeyword)
@@ -42,8 +40,7 @@ function searchKeywordsWithNative(keyword) {
         }
       }
     }
-    // Vérif dans la description 
-    if (!found && recipe.description.toLocaleLowerCase().includes(lowerKeyword)) {
+    if (!found && recipe.description.toLocaleLowerCase().includes(lowerKeyword)) {  // Si toujours pas de correspondance...Vérif dans la description 
       found = true
     }
     if (found) {
@@ -53,28 +50,52 @@ function searchKeywordsWithNative(keyword) {
   return results
 }
 
+// Fonction qui actualise l'affichage des recettes selon les selectedItems (et donc tags)
+function upgradeRecipesAccordingToSelectedItems () {
+  let filtered = recipes
+  if (selectedItems.ingredientsDropdownList.size > 0) {                     // Filtre par ingrédients
+    filtered = filtered.filter(recipe =>
+      Array.from(selectedItems.ingredientsDropdownList).every(ing =>
+        recipe.ingredients.some(i => i.ingredient.toLowerCase() === ing)
+      )
+    )
+  }
+  if (selectedItems.appliancesDropdownList.size > 0) {                      // Filtre par appareils
+    filtered = filtered.filter(recipe =>
+      selectedItems.appliancesDropdownList.has(recipe.appliance.toLowerCase())
+    )
+  }
+  if (selectedItems.ustensilsDropdownList.size > 0) {                        // Filtre par ustensiles
+    filtered = filtered.filter(recipe =>
+      Array.from(selectedItems.ustensilsDropdownList).every(ust =>
+        recipe.ustensils.some(u => u.toLowerCase() === ust)
+      )
+    )
+  }
+  displayRecipes(filtered)                        // Affiche les recettes filtrées
+  updateDropdownsAccordingToRecipes(filtered)     // Actualise les dropdowns en conséquence
+}
+
+
+// Fonction qui enclenche la fonction de filtre des recettes dès trois lettres entrée dans l'input de la searchbar
 function inputKeywordInSearchBar () {
-  const searchInput = document.getElementById('searchInput');
+  const searchInput = document.getElementById('searchInput')
   searchInput.addEventListener('input', () => {
-    const value = searchInput.value.trim();
+    const value = searchInput.value.trim()
     if (value.length >= 3) {
-      const results = searchKeywordsWithNative(value);
-      displayRecipes(results);
-      updateDropdownsAccordingToRecipes(results);
+      const results = upgradeRecipesAccordingToSearchBar(value)
+      displayRecipes(results)
+      updateDropdownsAccordingToRecipes(results)
     } else {
-      displayRecipes(recipes); // remet toutes les recettes
+      displayRecipes(recipes) // remet toutes les recettes
     }
-  });
+  })
 }
 inputKeywordInSearchBar()
 
 
 
-
-
-
-
-// Affichage des recettes sur la page d'accueil
+// Fonction d'affichage des recettes sur la page d'accueil
 function displayRecipes(recipes) {
   const recipesSection = document.querySelector(".recipes-container")
   recipesSection.innerHTML =''
@@ -87,22 +108,21 @@ function displayRecipes(recipes) {
 function manageClearCrossInSearchBar() {
   const input = document.getElementById('searchInput')
   const clearBtn = document.getElementById('clearButton')
-  input.addEventListener('input', () => {   //***** Affichage de la croix pour effacer le contenu préalablement entré */
+  input.addEventListener('input', () => {   // Affichage de la croix pour effacer le contenu préalablement entré 
     if (input.value.length > 0) {
       clearBtn.style.display = 'block'
     }
     else {
       clearBtn.style.display = 'none'
     }
-  });
-  clearBtn.addEventListener('click', () => {  //***** Efface le contenu entré lorsque click sur la croix, puis retire la croix et remet le focus dans la barre */
+  })
+  clearBtn.addEventListener('click', () => {  // Efface le contenu entré lorsque click sur la croix, puis retire la croix et remet le focus dans la barre */
     input.value = ''
     clearBtn.style.display = 'none'
     input.focus()
-  });
+  })
 }
-// Appel des fonctions à l'ouvert de la page
-async function init() {
+async function init() {         // Appel des fonctions à l'ouverture de la page
   displayRecipes(recipes)
   manageClearCrossInSearchBar()
 }
@@ -160,28 +180,28 @@ function extractUstensils(recipe, set) {
 }
 // Définition de fonction d'affichage des items (itemsSelected et sortedItems)
 function displayDropdownsLists(listElement, set, selectedSet = new Set()) {
-  listElement.innerHTML = '';
-  const sortedItems = Array.from(set).sort();
+  listElement.innerHTML = ''
+  const sortedItems = Array.from(set).sort()
   selectedSet.forEach(item => {
-    const li = document.createElement('li');
-    li.classList.add('selected-item');
-    li.dataset.value = item;
+    const li = document.createElement('li')
+    li.classList.add('selected-item')
+    li.dataset.value = item
     li.innerHTML = `
       <div class="d-flex justify-content-between itemSelected-container">
         ${item}
         <i class="fa-solid fa-circle-xmark close-selectedItem" style="cursor:pointer;"></i>
       </div>
-    `;
-    listElement.appendChild(li);
-    closeSelectedItem(listElement.id, li, item);     // Branchement de l'événement de fermeture sur les croix de fermeture 
-  });
+    `
+    listElement.appendChild(li)
+    closeSelectedItem(listElement.id, li, item)     // Branchement de l'événement de fermeture sur les croix de fermeture 
+  })
   sortedItems.forEach(item => {
     if (!selectedSet.has(item)) {
-      const li = document.createElement('li');
-      li.textContent = item;
-      listElement.appendChild(li);
+      const li = document.createElement('li')
+      li.textContent = item
+      listElement.appendChild(li)
     }
-  });
+  })
 }
 
 // Définition d'une fonction qui va permettre de faire jouer la fonction displayDropdownsLists directement avec le contenu adapté au dropdown en question
@@ -193,9 +213,9 @@ function createDropdownById(dropdownListId, extractorFn) {
 
 // Définition d'une fonction qui retourne un tableau avec les données correspondantes à l'input
 function filterDropdownListAccordingToInput(value, extractorFn) {
-  const set = generateDropdownsSets(extractorFn); // Génère un Set depuis les recettes
+  const set = generateDropdownsSets(extractorFn) // Génère un Set depuis les recettes
   const array = Array.from(set)                  // Convertit le Set en tableau
-  return array.filter(item => item.includes(value.toLowerCase())); // Garde uniquement les items qui commencent par les lettres tapées
+  return array.filter(item => item.includes(value.toLowerCase())) // Garde uniquement les items qui commencent par les lettres tapées
 }
 // Définition d'une fonction qui affiche les éléments du tableau précédemment créé à partir d'une lettre rentrées dans l'input.
 function displayDropdownCorrespondingToInput(inputId, listId, extractorFn) {
@@ -204,66 +224,67 @@ function displayDropdownCorrespondingToInput(inputId, listId, extractorFn) {
   const fullSet = generateDropdownsSets(extractorFn)
   input.addEventListener('input', () => {
     const value = input.value.trim()
-    const selectedSet = selectedItems[listId]; // sélection en cours
+    const selectedSet = selectedItems[listId] // sélection en cours
     if (value.length >= 1) {
-      const filteredItems = filterDropdownListAccordingToInput(value, extractorFn);
-      const filteredWithoutSelected = filteredItems.filter(item => !selectedSet.has(item));  // Supprime les éléments déjà sélectionnés
+      const filteredItems = filterDropdownListAccordingToInput(value, extractorFn)
+      const filteredWithoutSelected = filteredItems.filter(item => !selectedSet.has(item))  // Supprime les éléments déjà sélectionnés
       displayDropdownsLists( // Affiche les éléments sélectionnés en haut + ceux filtrés en dessous
         listElement,
         new Set(filteredWithoutSelected),
         selectedSet
       )
     } else {
-      displayDropdownsLists(listElement, fullSet, selectedSet); // Réaffiche tout avec sélection en haut
+      displayDropdownsLists(listElement, fullSet, selectedSet) // Réaffiche tout avec sélection en haut
     }
-  });
+  })
 }
 
 // Fonction qui permet de créer le selectedSet
 function selectItem(listId) {
-  const listElement = document.getElementById(listId);
+  const listElement = document.getElementById(listId)
   listElement.addEventListener('click', (e) => {
     // Si clic sur la croix → on ne fait rien ici
-    const itemSelected = e.target.closest('li');
-    if (!itemSelected) return;
-    const itemValue = itemSelected.dataset.value || itemSelected.textContent.trim().toLowerCase();
+    const itemSelected = e.target.closest('li')
+    if (!itemSelected) return
+    const itemValue = itemSelected.dataset.value || itemSelected.textContent.trim().toLowerCase()
     // Si déjà sélectionné → stop
     if (selectedItems[listId].has(itemValue)) {
-      return;
+      return
     }
     // Ajouter dans le Set
-    selectedItems[listId].add(itemValue);
+    selectedItems[listId].add(itemValue)
     // Marquer comme sélectionné
-    itemSelected.classList.add('selected-item');
-    itemSelected.dataset.value = itemValue; // on garde la vraie valeur
+    itemSelected.classList.add('selected-item')
+    itemSelected.dataset.value = itemValue // on garde la vraie valeur
     // Ajout du HTML avec la croix
-    const label = itemSelected.textContent.trim();
+    const label = itemSelected.textContent.trim()
     itemSelected.innerHTML = `
       <div class="d-flex justify-content-between itemSelected-container">
         ${label}
         <i class="fa-solid fa-circle-xmark close-selectedItem" style="cursor:pointer;"></i>
       </div>
-    `;
+    `
     // Déplacer en haut
-    listElement.prepend(itemSelected);
+    listElement.prepend(itemSelected)
     // Créer le tag
-    createYellowTag(listId, itemSelected, itemValue);
+    createTag(listId, itemSelected, itemValue)
     // Gérer suppression
-    closeSelectedItem(listId, itemSelected, itemValue);
-  });
+    closeSelectedItem(listId, itemSelected, itemValue)
+    upgradeRecipesAccordingToSelectedItems ()
+  })
 }
 
 // Fonction qui permet de faire jouer la fonction closeTag lorsque clique sur la croix de l'itemSelected 
 function closeSelectedItem(listId, itemSelected, itemValue) {
-  const closeBtnFromDropdown = itemSelected.querySelector('.close-selectedItem');
+  const closeBtnFromDropdown = itemSelected.querySelector('.close-selectedItem')
   closeBtnFromDropdown.addEventListener('click', (event) => {
-    event.stopPropagation();
-    closeTag(listId, itemValue);
-  });
+    event.stopPropagation()
+    closeTag(listId, itemValue)
+  })
 }
 
 // Fonction qui permet de créer le tag 
-function createYellowTag(listId, itemSelected, itemValue) {
+function createTag(listId, itemSelected, itemValue) {
   const tagContainer = document.getElementById('selected-tags-container')
   const tag = document.createElement('div')
   tag.classList.add('selected-tag')
@@ -282,28 +303,26 @@ function createYellowTag(listId, itemSelected, itemValue) {
 
 // Fonction de "centralisation" de la fermeture des itemSelected 
 function closeTag(listId, itemValue) {
-  // 1. Supprimer du Set de sélection
-  selectedItems[listId].delete(itemValue.toLowerCase());
-  // 2. Supprimer le tag visuel
-  const tags = document.querySelectorAll('#selected-tags-container .selected-tag');
+  selectedItems[listId].delete(itemValue.toLowerCase())                                // Supprime du Set de sélection
+  const tags = document.querySelectorAll('#selected-tags-container .selected-tag')     // Supprime le tag visuel
   tags.forEach(tag => {
-    const span = tag.querySelector('span');
+    const span = tag.querySelector('span')
     if (span && span.textContent.trim().toLowerCase() === itemValue.toLowerCase()) {
-      tag.remove();
+      tag.remove()
     }
-  });
-  // 3. Régénérer la liste dropdown pour que l’item redevienne un "sortedItem"
-  let extractorFn;
-  if (listId === 'ingredientsDropdownList') extractorFn = extractIngredients;
-  if (listId === 'appliancesDropdownList') extractorFn = extractAppliances;
-  if (listId === 'ustensilsDropdownList') extractorFn = extractUstensils;
+  })
+  let extractorFn                                                                    // Régénère la liste dropdown pour que l’item redevienne un "sortedItem"
+  if (listId === 'ingredientsDropdownList') extractorFn = extractIngredients
+  if (listId === 'appliancesDropdownList') extractorFn = extractAppliances
+  if (listId === 'ustensilsDropdownList') extractorFn = extractUstensils
 
-  const fullSet = generateDropdownsSets(extractorFn);
+  const fullSet = generateDropdownsSets(extractorFn)
   displayDropdownsLists(
     document.getElementById(listId),
     fullSet,
     selectedItems[listId] // Set mis à jour
-  );
+  )
+  upgradeRecipesAccordingToSelectedItems()
 }
 
 
