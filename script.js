@@ -87,23 +87,30 @@ function extractUstensils(recipe, set) {
     set.add(item.toLowerCase())
   })
 }
-// Définition de fonction d'affichage des sets 
+// Définition de fonction d'affichage des items (itemsSelected et sortedItems)
 function displayDropdownsLists(listElement, set, selectedSet = new Set()) {
-  listElement.innerHTML = ''
-  const sortedItems = Array.from(set).sort() // Je transforme mon set en tableau et je trie les items par ordre alphabétique
+  listElement.innerHTML = '';
+  const sortedItems = Array.from(set).sort();
   selectedSet.forEach(item => {
-    const li = document.createElement('li')
-    li.textContent = item
-    li.classList.add('selected-item')
-    listElement.appendChild(li)
-  })
+    const li = document.createElement('li');
+    li.classList.add('selected-item');
+    li.dataset.value = item;
+    li.innerHTML = `
+      <div class="d-flex justify-content-between itemSelected-container">
+        ${item}
+        <i class="fa-solid fa-circle-xmark close-selectedItem" style="cursor:pointer;"></i>
+      </div>
+    `;
+    listElement.appendChild(li);
+    closeSelectedItem(listElement.id, li, item);     // Branchement de l'événement de fermeture sur les croix de fermeture 
+  });
   sortedItems.forEach(item => {
     if (!selectedSet.has(item)) {
-      const li = document.createElement('li')
-      li.textContent = item
-      listElement.appendChild(li)
+      const li = document.createElement('li');
+      li.textContent = item;
+      listElement.appendChild(li);
     }
-  })
+  });
 }
 
 // Définition d'une fonction qui va permettre de faire jouer la fonction displayDropdownsLists directement avec le contenu adapté au dropdown en question
@@ -141,41 +148,72 @@ function displayDropdownCorrespondingToInput(inputId, listId, extractorFn) {
   });
 }
 
-
+// Fonction qui permet de créer le selectedSet
 function selectItem(listId) {
-  const listElement = document.getElementById(listId)
+  const listElement = document.getElementById(listId);
   listElement.addEventListener('click', (e) => {
-    const itemSelected = e.target
-    const itemValue = itemSelected.textContent.toLowerCase()
-    if (selectedItems[listId].has(itemValue)) return
-    else selectedItems[listId].add(itemValue)
-    itemSelected.classList.add('selected-item')
+    // Si clic sur la croix → on ne fait rien ici
+    const itemSelected = e.target.closest('li');
+    if (!itemSelected) return;
+    const itemValue = itemSelected.dataset.value || itemSelected.textContent.trim().toLowerCase();
+    // Si déjà sélectionné → stop
+    if (selectedItems[listId].has(itemValue)) {
+      return;
+    }
+    // Ajouter dans le Set
+    selectedItems[listId].add(itemValue);
+    // Marquer comme sélectionné
+    itemSelected.classList.add('selected-item');
+    itemSelected.dataset.value = itemValue; // on garde la vraie valeur
+    // Ajout du HTML avec la croix
+    const label = itemSelected.textContent.trim();
     itemSelected.innerHTML = `
       <div class="d-flex justify-content-between itemSelected-container">
-        ${itemSelected.textContent}
-        <i class="fa-solid fa-circle-xmark close-selectedItem"; cursor: pointer;"></i>
+        ${label}
+        <i class="fa-solid fa-circle-xmark close-selectedItem" style="cursor:pointer;"></i>
       </div>
-    `
-    listElement.prepend(itemSelected)
-    createYellowTag(listId, itemSelected, itemValue)
-    closeSelectedItem (listId, itemSelected, itemValue)
-  })
+    `;
+    // Déplacer en haut
+    listElement.prepend(itemSelected);
+    // Créer le tag
+    createYellowTag(listId, itemSelected, itemValue);
+    // Gérer suppression
+    closeSelectedItem(listId, itemSelected, itemValue);
+  });
 }
 
+// Fonction qui permet de faire jouer la fonction closeTag lorsque clique sur la croix de l'itemSelected 
+function closeSelectedItem(listId, itemSelected, itemValue) {
+  const closeBtnFromDropdown = itemSelected.querySelector('.close-selectedItem');
+  closeBtnFromDropdown.addEventListener('click', (event) => {
+    event.stopPropagation(); 
+    closeTag(listId, itemValue); 
+  });
+}
 
-function unselectItem(listId, itemValue) {
+// Fonction qui permet de créer le tag 
+function createYellowTag(listId, itemSelected, itemValue) {
+  const tagContainer = document.getElementById('selected-tags-container')
+  const tag = document.createElement('div')
+  tag.classList.add('selected-tag')
+  const span = document.createElement('span')
+  span.textContent = itemSelected.textContent
+  const closeBtnFromTag = document.createElement('button')
+  closeBtnFromTag.classList.add('close-tag')
+  closeBtnFromTag.textContent = '✕'
+  closeBtnFromTag.addEventListener('click', () => {
+    closeTag(listId, itemValue)
+  })
+  tag.appendChild(span)
+  tag.appendChild(closeBtnFromTag)
+  tagContainer.appendChild(tag)
+}
+
+// Fonction de "centralisation" de la fermeture des itemSelected 
+function closeTag(listId, itemValue) {
   // 1. Supprimer du Set de sélection
   selectedItems[listId].delete(itemValue.toLowerCase());
-  // 2. Trouver et mettre à jour l'élément dans la dropdown
-  const listElement = document.getElementById(listId);
-  const listItems = listElement.querySelectorAll('li');
-  listItems.forEach(li => {
-    if (li.textContent.trim().toLowerCase() === itemValue.toLowerCase()) {
-      li.classList.remove('selected-item');
-      li.innerHTML = li.textContent.trim(); // remet juste le texte
-    }
-  });
-  // 3. Supprimer le tag correspondant
+  // 2. Supprimer le tag visuel
   const tags = document.querySelectorAll('#selected-tags-container .selected-tag');
   tags.forEach(tag => {
     const span = tag.querySelector('span');
@@ -183,51 +221,19 @@ function unselectItem(listId, itemValue) {
       tag.remove();
     }
   });
+  // 3. Régénérer la liste dropdown pour que l’item redevienne un "sortedItem"
+  let extractorFn;
+  if (listId === 'ingredientsDropdownList') extractorFn = extractIngredients;
+  if (listId === 'appliancesDropdownList') extractorFn = extractAppliances;
+  if (listId === 'ustensilsDropdownList') extractorFn = extractUstensils;
+
+  const fullSet = generateDropdownsSets(extractorFn);
+  displayDropdownsLists(
+    document.getElementById(listId),
+    fullSet,
+    selectedItems[listId] // Set mis à jour
+  );
 }
-
-
-  function closeSelectedItem(listId, itemSelected, itemValue) {
-  const closeIcon = itemSelected.querySelector('.close-selectedItem')
-  closeIcon.addEventListener('click', (event) => {
-    event.stopPropagation() // Évite de relancer le click sur le LI
-    itemSelected.classList.remove('selected-item')
-    unselectItem(listId, itemValue)
-  })
-}
-
-function removeYellowTag(listId, itemSelected, itemValue) {
-  const tags = document.querySelectorAll('#selected-tags-container .selected-tag')
-  tags.forEach(tag => {
-    const span = tag.querySelector('span')
-    if (span && span.textContent.trim().toLowerCase() === itemValue.trim().toLowerCase()) {
-      tag.remove()
-      itemSelected.classList.remove('selected-item')
-      selectedItems[listId].delete(itemValue)
-    }
-  })
-}
-
-  function createYellowTag(listId, itemSelected, itemValue) {
-    const tagContainer = document.getElementById('selected-tags-container')
-    const tag = document.createElement('div')
-    tag.classList.add('selected-tag')
-    const span = document.createElement('span')
-    span.textContent = itemSelected.textContent
-    const closeBtn = document.createElement('button')
-    closeBtn.classList.add('close-tag')
-    closeBtn.textContent = '✕'
-    closeBtn.addEventListener('click', () => {
-      unselectItem(listId, itemValue)
-    })
-    tag.appendChild(span)
-    tag.appendChild(closeBtn)
-    tagContainer.appendChild(tag)
-  }
-
-
-
-
-
 
 
 function manageClearCrossInDropdownSearchBar(inputId, listId, extractorFn) {
