@@ -27,33 +27,19 @@ function updateDropdownsAccordingToRecipes(filteredRecipes) {
 }
 
 
-// Fonction qui filtre les recettes selon mots clefs entrés ds la searchBar ->>>> VERSION BOUCLES NATIVES 
+// Fonction qui filtre les recettes selon mots clefs entrés ds la searchBar ->>>> VERSION PROG FONCTIONNELLE
 function updateRecipesAccordingToSearchBar(keyword) {
-  const results = []
-  const lowerKeyword = keyword.toLowerCase()
-  for (recipe of recipes) {
-    let found = false
-    if (recipe.name.toLocaleLowerCase().includes(lowerKeyword)) {         // Vérif dans le nom 
-      found = true
-    }
-    if (!found) {                                                         // Si pas de correspondance avec le nom...
-      for (const ing of recipe.ingredients) {                             // ...Vérif dans les ingrédients 
-        if (ing.ingredient.toLocaleLowerCase().includes(lowerKeyword)) {
-          found = true
-          break // stoppe recherche dans les ingrédients 
-        }
-      }
-    }
-    if (!found && recipe.description.toLocaleLowerCase().includes(lowerKeyword)) {  // Si toujours pas de correspondance...Vérif dans la description 
-      found = true
-    }
-    if (found) {
-      results.push(recipe)
-    }
-    console.log(lowerKeyword)
-  }
-  return results
+  const lowerKeyword = keyword.toLowerCase();
+
+  return recipes.filter(recipe =>
+    recipe.name.toLowerCase().includes(lowerKeyword) || 
+    recipe.ingredients.some(ing => 
+      ing.ingredient.toLowerCase().includes(lowerKeyword)
+    ) ||
+    recipe.description.toLowerCase().includes(lowerKeyword)
+  );
 }
+
 
 // Définition d'une fonction qui affiche le message d'erreur si aucune recette reconnue dans la searchbar 
 function displayErrorMessage(value) {
@@ -321,7 +307,9 @@ function selectItem(listId) {
     // Gérer suppression
     closeSelectedItem(listId, itemSelected, itemValue)
     updateRecipes()
+      console.log(itemSelected)
   })
+
 }
 
 // Fonction qui permet de faire jouer la fonction closeTag lorsque clique sur la croix de l'itemSelected 
