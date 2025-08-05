@@ -22,8 +22,8 @@ function updateDropdownsAccordingToRecipes(filteredRecipes) {
 }
 
 
-// Fonction qui actualise l'affichage des recettes selon mots clefs de la searchBar ->>>> VERSION BOUCLES NATIVES 
-function upgradeRecipesAccordingToSearchBar(keyword) {
+// Fonction qui filtre les recettes selon mots clefs entrés ds la searchBar ->>>> VERSION BOUCLES NATIVES 
+function updateRecipesAccordingToSearchBar(keyword) {
   const results = []
   const lowerKeyword = keyword.toLowerCase()
   for (recipe of recipes) {
@@ -35,7 +35,6 @@ function upgradeRecipesAccordingToSearchBar(keyword) {
       for (const ing of recipe.ingredients) {                             // ...Vérif dans les ingrédients 
         if (ing.ingredient.toLocaleLowerCase().includes(lowerKeyword)) {
           found = true
-          console.log(lowerKeyword)
           break // stoppe recherche dans les ingrédients 
         }
       }
@@ -46,44 +45,18 @@ function upgradeRecipesAccordingToSearchBar(keyword) {
     if (found) {
       results.push(recipe)
     }
+    console.log(lowerKeyword)
   }
   return results
 }
 
-// Fonction qui actualise l'affichage des recettes selon les selectedItems (et donc tags)
-function upgradeRecipesAccordingToSelectedItems () {
-  let filtered = recipes
-  if (selectedItems.ingredientsDropdownList.size > 0) {                     // Filtre par ingrédients
-    filtered = filtered.filter(recipe =>
-      Array.from(selectedItems.ingredientsDropdownList).every(ing =>
-        recipe.ingredients.some(i => i.ingredient.toLowerCase() === ing)
-      )
-    )
-  }
-  if (selectedItems.appliancesDropdownList.size > 0) {                      // Filtre par appareils
-    filtered = filtered.filter(recipe =>
-      selectedItems.appliancesDropdownList.has(recipe.appliance.toLowerCase())
-    )
-  }
-  if (selectedItems.ustensilsDropdownList.size > 0) {                        // Filtre par ustensiles
-    filtered = filtered.filter(recipe =>
-      Array.from(selectedItems.ustensilsDropdownList).every(ust =>
-        recipe.ustensils.some(u => u.toLowerCase() === ust)
-      )
-    )
-  }
-  displayRecipes(filtered)                        // Affiche les recettes filtrées
-  updateDropdownsAccordingToRecipes(filtered)     // Actualise les dropdowns en conséquence
-}
-
-
-// Fonction qui enclenche la fonction de filtre des recettes dès trois lettres entrée dans l'input de la searchbar
-function inputKeywordInSearchBar () {
+// Fonction qui affiche les recettes correspondantes et actualise les dropdowns dès trois lettres entrée dans l'input de la searchbar
+function inputKeywordInSearchBar() {
   const searchInput = document.getElementById('searchInput')
   searchInput.addEventListener('input', () => {
     const value = searchInput.value.trim()
     if (value.length >= 3) {
-      const results = upgradeRecipesAccordingToSearchBar(value)
+      const results = updateRecipesAccordingToSearchBar(value)
       displayRecipes(results)
       updateDropdownsAccordingToRecipes(results)
     } else {
@@ -93,12 +66,58 @@ function inputKeywordInSearchBar () {
 }
 inputKeywordInSearchBar()
 
+// Fonction CENTRALE de filtre (selon searchBar + selectedItems)
+function updateRecipes() {
+  const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+  let filtered = [];
+  recipesLoop:
+  for (const recipe of recipes) {
+    if (keyword.length >= 3) {                                                                           // 1. Filtre par mot-clé (>= 3 caractères)
+      const matchKeyword = updateRecipesAccordingToSearchBar(keyword).some(r => r.id === recipe.id);
+      if (!matchKeyword) continue; // passe à la recette suivante si condition pas ok
+    }
+    if (selectedItems.ingredientsDropdownList.size > 0) {                                                // 2. Filtre par tags ingrédients                          
+      for (const ing of selectedItems.ingredientsDropdownList) {
+        let foundIng = false;
+        for (const i of recipe.ingredients) {
+          if (i.ingredient.toLowerCase() === ing) {
+            foundIng = true;
+            break;
+          }
+        }
+        if (!foundIng) continue recipesLoop;
+      }
+    }
+    if (selectedItems.appliancesDropdownList.size > 0) {                                                // 3. Filtre par tag appareil
+      if (!selectedItems.appliancesDropdownList.has(recipe.appliance.toLowerCase())) {
+        continue;
+      }
+    }
+    if (selectedItems.ustensilsDropdownList.size > 0) {                                                // 4. Filtre par tags ustensiles
+      for (const ust of selectedItems.ustensilsDropdownList) {
+        let foundUst = false;
+        for (const u of recipe.ustensils) {
+          if (u.toLowerCase() === ust) {
+            foundUst = true;
+            break;
+          }
+        }
+        if (!foundUst) continue recipesLoop;
+      }
+    }
+
+    filtered.push(recipe);        // Recettes qui ne passent pas les "continue" sont conservées
+  }
+  displayRecipes(filtered);
+  updateDropdownsAccordingToRecipes(filtered);
+}
+
 
 
 // Fonction d'affichage des recettes sur la page d'accueil
 function displayRecipes(recipes) {
   const recipesSection = document.querySelector(".recipes-container")
-  recipesSection.innerHTML =''
+  recipesSection.innerHTML = ''
   recipes.forEach(recipe => {
     const card = createRecipeCard(recipe)
     recipesSection.appendChild(card)
@@ -122,6 +141,7 @@ function manageClearCrossInSearchBar() {
     input.focus()
   })
 }
+
 async function init() {         // Appel des fonctions à l'ouverture de la page
   displayRecipes(recipes)
   manageClearCrossInSearchBar()
@@ -270,7 +290,7 @@ function selectItem(listId) {
     createTag(listId, itemSelected, itemValue)
     // Gérer suppression
     closeSelectedItem(listId, itemSelected, itemValue)
-    upgradeRecipesAccordingToSelectedItems ()
+    updateRecipes()
   })
 }
 
@@ -322,7 +342,7 @@ function closeTag(listId, itemValue) {
     fullSet,
     selectedItems[listId] // Set mis à jour
   )
-  upgradeRecipesAccordingToSelectedItems()
+  updateRecipes()
 }
 
 
@@ -368,19 +388,3 @@ function manageDropdowns() {
   selectItem('ustensilsDropdownList')
 }
 manageDropdowns()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
