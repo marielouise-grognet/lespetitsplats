@@ -6,6 +6,9 @@ const selectedItems = {
   ustensilsDropdownList: new Set()
 }
 
+
+
+
 // Fonction qui actualise le contenu des dropdown selon ce qui a été rentré dans la searchbar principale 
 function updateDropdownsAccordingToRecipes(filteredRecipes) {
   // Génère des Sets selon les recettes filtrées
@@ -85,6 +88,7 @@ function inputKeywordInSearchBar() {
 }
 inputKeywordInSearchBar()
 
+
 // FONCTION CENTRALE DE FILTRE (selon searchBar + selectedItems)
 function updateRecipes() {
   const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -128,7 +132,16 @@ function updateRecipes() {
   }
   displayRecipes(filtered);
   updateDropdownsAccordingToRecipes(filtered);
+  displayTotalNumberRecipes(filtered.length)
 }
+
+function displayTotalNumberRecipes(total) {
+  const counterElement = document.getElementById('recipeCount'); // élément HTML prévu
+  if (counterElement) {
+    counterElement.textContent = `${total} recette${total > 1 ? 's' : ''}`;
+  }
+}
+
 
 
 
@@ -161,11 +174,7 @@ function manageClearCrossInSearchBar() {
   })
 }
 
-async function init() {         // Appel des fonctions à l'ouverture de la page
-  displayRecipes(recipes)
-  manageClearCrossInSearchBar()
-}
-init()
+
 
 
 // Ouverture et fermeture des dropdowns
@@ -407,3 +416,10 @@ function manageDropdowns() {
   selectItem('ustensilsDropdownList')
 }
 manageDropdowns()
+
+async function init() {         // Appel des fonctions à l'ouverture de la page
+  displayRecipes(recipes)
+  manageClearCrossInSearchBar()
+  updateRecipes()
+}
+init()
