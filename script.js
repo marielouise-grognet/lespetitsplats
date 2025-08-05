@@ -1,3 +1,5 @@
+
+
 const selectedItems = {
   ingredientsDropdownList: new Set(),
   appliancesDropdownList: new Set(),
@@ -50,15 +52,32 @@ function updateRecipesAccordingToSearchBar(keyword) {
   return results
 }
 
+// Définition d'une fonction qui affiche le message d'erreur si aucune recette reconnue dans la searchbar 
+function displayErrorMessage(value) {
+  const container = document.querySelector('.recipes-container')
+  const errorMessage = document.createElement('div')
+  errorMessage.classList.add('error-message') // classe CSS si tu veux styliser
+  errorMessage.innerHTML = `Aucune recette ne contient "<strong>${value}</strong>", vous pouvez chercher "tarte aux pommes", "poisson", etc"`
+  container.appendChild(errorMessage)
+}
+
+
+
 // Fonction qui affiche les recettes correspondantes et actualise les dropdowns dès trois lettres entrée dans l'input de la searchbar
 function inputKeywordInSearchBar() {
   const searchInput = document.getElementById('searchInput')
   searchInput.addEventListener('input', () => {
     const value = searchInput.value.trim()
+    const container = document.querySelector('.recipes-container')
+    container.innerHTML = ''
     if (value.length >= 3) {
       const results = updateRecipesAccordingToSearchBar(value)
-      displayRecipes(results)
-      updateDropdownsAccordingToRecipes(results)
+      if (results.length > 0) {
+        displayRecipes(results)
+        updateDropdownsAccordingToRecipes(results)
+      } else {
+        displayErrorMessage(value)
+      }
     } else {
       displayRecipes(recipes) // remet toutes les recettes
     }
@@ -66,7 +85,7 @@ function inputKeywordInSearchBar() {
 }
 inputKeywordInSearchBar()
 
-// Fonction CENTRALE de filtre (selon searchBar + selectedItems)
+// FONCTION CENTRALE DE FILTRE (selon searchBar + selectedItems)
 function updateRecipes() {
   const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
   let filtered = [];
@@ -80,7 +99,7 @@ function updateRecipes() {
       for (const ing of selectedItems.ingredientsDropdownList) {
         let foundIng = false;
         for (const i of recipe.ingredients) {
-          if (i.ingredient.toLowerCase() === ing) {
+          if (i.ingredient.toLowerCase().includes(ing)) {
             foundIng = true;
             break;
           }
@@ -105,7 +124,6 @@ function updateRecipes() {
         if (!foundUst) continue recipesLoop;
       }
     }
-
     filtered.push(recipe);        // Recettes qui ne passent pas les "continue" sont conservées
   }
   displayRecipes(filtered);
@@ -139,6 +157,7 @@ function manageClearCrossInSearchBar() {
     input.value = ''
     clearBtn.style.display = 'none'
     input.focus()
+    updateRecipes()
   })
 }
 
@@ -259,7 +278,7 @@ function displayDropdownCorrespondingToInput(inputId, listId, extractorFn) {
   })
 }
 
-// Fonction qui permet de créer le selectedSet
+// Fonction qui permet de générer le selectedSet
 function selectItem(listId) {
   const listElement = document.getElementById(listId)
   listElement.addEventListener('click', (e) => {

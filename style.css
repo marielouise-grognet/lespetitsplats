@@ -215,6 +215,13 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 
+.error-message {
+position: absolute;
+  left: 50%;                  /* place le point de référence au milieu */
+  transform: translateX(-50%);
+  padding-top: 30px;
+}
+
 
 .close-selectedItem {
   padding-top: 5px;
