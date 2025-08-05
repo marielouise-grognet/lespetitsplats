@@ -132,7 +132,7 @@ function updateRecipes() {
   }
   displayRecipes(filtered);
   updateDropdownsAccordingToRecipes(filtered);
-  displayTotalNumberRecipes(filtered.length)
+
 }
 
 function displayTotalNumberRecipes(total) {
@@ -152,7 +152,9 @@ function displayRecipes(recipes) {
   recipes.forEach(recipe => {
     const card = createRecipeCard(recipe)
     recipesSection.appendChild(card)
+    displayTotalNumberRecipes(recipes.length)
   })
+  
 }
 // Gestion de la croix d'effacement dans la barre de recherche
 function manageClearCrossInSearchBar() {
