@@ -106,7 +106,7 @@ function updateRecipes() {
       for (const ust of selectedItems.ustensilsDropdownList) {
         let foundUst = false;
         for (const u of recipe.ustensils) {
-          if (u.toLowerCase() === ust) {
+          if (u.toLowerCase().includes(ust)) {
             foundUst = true;
             break;
           }
