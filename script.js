@@ -1,12 +1,8 @@
-
-
 const selectedItems = {
   ingredientsDropdownList: new Set(),
   appliancesDropdownList: new Set(),
   ustensilsDropdownList: new Set()
 }
-
-
 
 
 // Fonction qui actualise le contenu des dropdown selon ce qui a été rentré dans la searchbar principale 
@@ -55,7 +51,7 @@ function updateRecipesAccordingToSearchBar(keyword) {
   return results
 }
 
-// Définition d'une fonction qui affiche le message d'erreur si aucune recette reconnue dans la searchbar 
+// Fonction qui affiche message d'erreur si aucune recette reconnue dans la searchbar 
 function displayErrorMessage(value) {
   const container = document.querySelector('.recipes-container')
   const errorMessage = document.createElement('div')
@@ -67,7 +63,7 @@ function displayErrorMessage(value) {
 
 
 // Fonction qui affiche les recettes correspondantes et actualise les dropdowns dès trois lettres entrée dans l'input de la searchbar
-function inputKeywordInSearchBar() {
+function updateAccordingKeywordInSearchBar() {
   const searchInput = document.getElementById('searchInput')
   searchInput.addEventListener('input', () => {
     const value = searchInput.value.trim()
@@ -86,7 +82,7 @@ function inputKeywordInSearchBar() {
     }
   })
 }
-inputKeywordInSearchBar()
+
 
 
 // FONCTION CENTRALE DE FILTRE (selon searchBar + selectedItems)
@@ -108,10 +104,10 @@ function updateRecipes() {
             break;
           }
         }
-        if (!foundIng) continue recipesLoop;
+        if (!foundIng) continue recipesLoop; 
       }
     }
-    if (selectedItems.appliancesDropdownList.size > 0) {                                                // 3. Filtre par tag appareil
+    if (selectedItems.appliancesDropdownList.size > 0) {                                             // 3. Filtre par tag appareil
       if (!selectedItems.appliancesDropdownList.has(recipe.appliance.toLowerCase())) {
         continue;
       }
@@ -423,5 +419,6 @@ async function init() {         // Appel des fonctions à l'ouverture de la page
   displayRecipes(recipes)
   manageClearCrossInSearchBar()
   updateRecipes()
+  updateAccordingKeywordInSearchBar()
 }
 init()
